@@ -37,8 +37,11 @@
 Quantum Inner State Manifolds (QISMs) model the state space of a $Y$-qubit register as the symplectic manifold $M_Y=(\mathbb{CP}^1)^Y$ with its product Fubini--Study form. We treat $M_Y$ as an algebraic variety over $\Z$ and study its anticanonical Calabi--Yau sections. First we note that no projective-bundle QISM is itself Calabi--Yau: $c_1$ never vanishes on a $\mathbb{CP}^{N-1}$ fibre. Calabi--Yau geometry therefore has to come from sections. For $Y=4$ these sections are exactly the quadric sections of the Segre variety of separable four-qubit states. Inside this class we single out a one-parameter family $V_\lambda$ built from the (bilinearly complexified) transverse Pauli expectation $\langle\sigma_x\rangle$. On the torus it is $\sum_{i=1}^4(x_i+x_i^{-1})=\lambda$. We show that its point counts over $\F_p$ are twisted fourth moments of Kloosterman sums, and that its periods are generating functions of closed walks on $\Z^4$, namely $\binom{2n}{n}D_n$ with $D_n$ the Domb numbers. We then give three exact arithmetic statements, verified for every prime $5\le p\le 1000$:
 (A) $\#V_0^{\circ}(\F_p)=p^3-2p^2-7-a_p(f_8)$, equivalently $\sum_{a}\leg{a}{p}\Kl(a)^4=-3p^2-p\,a_p(f_8)$;
 (B) $\#V_{\pm 8}^{\circ}(\F_p)=p^3-4p^2+3p-7-3p\,a_p(g_{24})-a_p(f_6)$;
-(C) the non-CM supercongruence $\sum_{k=0}^{p-1}\binom{2k}{k}D_k\,64^{-k}\equiv a_p(f_6)\pmod{p^3}$.
-Here $f_8=\eta(2\tau)^4\eta(4\tau)^4$, $f_6=(\eta(\tau)\eta(2\tau)\eta(3\tau)\eta(6\tau))^2$ and $g_{24}=\eta(2\tau)\eta(4\tau)\eta(6\tau)\eta(12\tau)$. Statement (C) is sharp: it fails modulo $p^4$ for every prime tested. We outline proof strategies and list open problems. All computations are reproducible with the accompanying code.
+(C) the non-CM supercongruence $\sum_{k=0}^{p-1}\binom{2k}{k}D_k\,64^{-k}\equiv a_p(f_6)\pmod{p^3}$;
+(D) $\#V_{\pm 4}^{\circ}(\F_p)=p^3-4p^2+4p\big(1-\leg{-1}{p}\big)-7-a_p(f_{12})$;
+(E) $\sum_{k=0}^{p-1}\binom{2k}{k}D_k\,16^{-k}\equiv a_p(f_{12})\pmod{p^3}$, with $f_{12}$ the newform of level $12$ and weight $4$.
+We also prove that $\#V_\lambda^\circ(\F_p)\equiv-7-\sum_{k<p}\binom{2k}kD_k\lambda^{-2k}\pmod p$ for every $\lambda\in\F_p^\times$, so each supercongruence is, modulo $p$, equivalent to the matching point-count formula.
+Here $f_8=\eta(2\tau)^4\eta(4\tau)^4$, $f_6=(\eta(\tau)\eta(2\tau)\eta(3\tau)\eta(6\tau))^2$ and $g_{24}=\eta(2\tau)\eta(4\tau)\eta(6\tau)\eta(12\tau)$. Statements (C) and (E) are sharp: they fail modulo $p^4$ for every prime tested (with the single exception $p=809$ for (E)). We outline proof strategies and list open problems. All computations are reproducible with the accompanying code.
 \end{abstract}
 
 \maketitle
@@ -60,10 +63,11 @@ Symplectic surgery generally produces manifolds with no algebraic, let alone ari
 \item For $Y=4$ the Calabi--Yau sections of $M_4$ are \emph{exactly} the quadric sections of the Segre variety of separable four-qubit states (Proposition~\ref{prop:segre}).
 \item A distinguished \emph{Pauli family} $V_\lambda$ has point counts given by twisted fourth moments of Kloosterman sums (Lemma~\ref{lem:kl}) and periods given by closed walks on $\Z^4$ (Lemma~\ref{lem:period}).
 \item At the special fibres $\lambda=0$ and $\lambda=\pm8$ the Galois representations become modular. They are attached to the weight-$4$ newforms of levels $8$ and $6$ (Theorems~\ref{thm:A} and \ref{thm:B}). The truncated period at $\lambda=8$ gives a sharp mod-$p^3$ supercongruence for a non-CM form (Theorem~\ref{thm:C}).
+\item The other singular fibres $\lambda=\pm4$ are modular as well, with the level-$12$ newform $f_{12}$ (Theorems~\ref{thm:D} and \ref{thm:E}). So every finite singular fibre of the Pauli family carries a weight-$4$ modular motive and a matching sharp supercongruence. A proved mod-$p$ link (Lemma~\ref{lem:modp}) ties the point counts to the truncated periods.
 \end{enumerate}
 
 \subsection*{Status of the results}
-Theorems~\ref{thm:A}--\ref{thm:C} are stated as \emph{conjectural identities with complete numerical verification in the stated range}: every prime $5\le p\le 1000$ (Theorem~\ref{thm:A}$'$ up to $p\le400$), in exact integer arithmetic. Proposition~\ref{prop:noCY}, Proposition~\ref{prop:segre} and Lemmas~\ref{lem:kl}--\ref{lem:period} are proved. For each conjectural statement we give a concrete proof strategy (\S\ref{sec:proofs}). We have searched the literature on Kloosterman moments \cite{Livne,PTV,HSGS,Yun,FSY}, Gaussian hypergeometric series \cite{AO,Kilbourn} and Domb-number supercongruences \cite{MS,CCL}. We have not found (B) or (C) stated there. Given how active these areas are, the reader should treat priority claims with caution; see Remark~\ref{rem:priority}.
+Theorems~\ref{thm:A}--\ref{thm:E} are stated as \emph{conjectural identities with complete numerical verification in the stated range}: every prime $5\le p\le 1000$ (Theorem~\ref{thm:A}$'$ up to $p\le400$), in exact integer arithmetic. Proposition~\ref{prop:noCY}, Proposition~\ref{prop:segre} and Lemmas~\ref{lem:kl}, \ref{lem:period} and \ref{lem:modp} are proved. For each conjectural statement we give a concrete proof strategy (\S\ref{sec:proofs}). We have searched the literature on Kloosterman moments \cite{Livne,PTV,HSGS,Yun,FSY}, Gaussian hypergeometric series \cite{AO,Kilbourn} and Domb-number supercongruences \cite{MS,CCL}. We have not found (B)--(E) stated there. Given how active these areas are, the reader should treat priority claims with caution; see Remark~\ref{rem:priority}.
 
 \section{Quantum inner state manifolds as algebraic varieties}
 
@@ -129,6 +133,19 @@ Expand geometrically and take constant terms: $W_{2n}=\mathrm{CT}\big[(\sum_i x_
 
 So $\varpi$ is the lattice Green function of $\Z^4$. It satisfies a fourth-order differential equation of Calabi--Yau type \cite{Guttmann,AESZ}, with singular points at $\lambda^2\in\{0,16,64,\infty\}$. The fibres $\lambda=\pm8$ are conifold fibres: $V^\circ_{8}$ has a single node at $x=(1,1,1,1)$.
 
+The next lemma is the elementary bridge between point counts and truncated periods. It holds for every $\lambda$, not only the special ones.
+
+\begin{lemma}\label{lem:modp}
+Let $p$ be an odd prime and $\lambda\in\F_p^\times$. Then
+\[ N_p(\lambda)\equiv -7-\sum_{k=0}^{p-1}\binom{2k}{k}D_k\,\lambda^{-2k}\pmod p. \]
+\end{lemma}
+
+\begin{proof}
+Write $g=\sum_i(x_i+x_i^{-1})$. By Fermat, $N_p(\lambda)\equiv\sum_{x\in(\F_p^\times)^4}\big(1-(g(x)-\lambda)^{p-1}\big)$. Expand $(g-\lambda)^{p-1}=\sum_{j}\binom{p-1}{j}(-\lambda)^{p-1-j}g^j$ and use $\binom{p-1}{j}\equiv(-1)^j$, so the coefficient is $\equiv\lambda^{p-1-j}\equiv\lambda^{-j}$. Now $\sum_{x}x^m\equiv(-1)^4=1$ if every $m_i\equiv0\pmod{p-1}$ and $0$ otherwise. For $j\le p-1$ the monomials of $g^j$ have $|m_i|\le j$. So only $m=0$ contributes, plus, when $j=p-1$, the eight monomials $x_i^{\pm(p-1)}$, each with coefficient $1$. Hence $\sum_x(g-\lambda)^{p-1}\equiv 8+\sum_{j<p}W_j\lambda^{-j}$, where $W_j=\mathrm{CT}(g^j)$ vanishes for odd $j$. Since $(p-1)^4\equiv1$, we get $N_p(\lambda)\equiv-7-\sum_{2k\le p-1}W_{2k}\lambda^{-2k}$. Finally $\binom{2k}{k}\equiv0\pmod p$ for $(p-1)/2<k\le p-1$, so the sum can be extended to $k\le p-1$. Then Lemma~\ref{lem:period} gives $W_{2k}=\binom{2k}kD_k$.
+\end{proof}
+
+In particular, modulo $p$, Theorem~\ref{thm:C} is equivalent to Theorem~\ref{thm:B}, and Theorem~\ref{thm:E} is equivalent to Theorem~\ref{thm:D}. The content of the supercongruences is the lift from $p$ to $p^3$.
+
 \section{Modularity at the special fibres}
 
 Throughout, $a_p(f)$ denotes the $p$-th Fourier coefficient and
@@ -159,6 +176,22 @@ and the congruence fails modulo $p^4$ for every prime in the range.
 
 Theorem~\ref{thm:C} says that the period of the Pauli family, truncated at $p$ and evaluated at the conifold $\lambda=8$ (that is, $\lambda^{-2}=1/64$), recovers the Hecke eigenvalue of the modular motive found in Theorem~\ref{thm:B} to third order. The form $f_6$ has no complex multiplication. So this is a non-CM supercongruence, of the same kind as the Kilbourn--Van Hamme congruence for Ap\'ery numbers and $f_8$ \cite{Kilbourn}, and unlike the CM congruences ($p=x^2+3y^2$) for $\sum D_k/4^k$ conjectured by Z.-H.~Sun and proved by Mao--Schlosser \cite{MS}. It also fits the level-$6$ modular parametrisation of the Domb numbers by Chan--Chan--Liu \cite{CCL}.
 
+\subsection*{The fibres $\lambda=\pm4$}
+Let $f_{12}=q+3q^3-18q^5+8q^7+9q^9+36q^{11}-10q^{13}-\cdots$ be the unique normalised newform in $S_4(\Gamma_0(12))$ (LMFDB label \texttt{12.4.a.a}). It has no complex multiplication.
+
+\begin{theorem}[Conjecture D; verified for $5\le p\le 1000$]\label{thm:D}
+For every prime $p\ge5$,
+\[ N_p(4)=N_p(-4)=p^3-4p^2+4p\Big(1-\leg{-1}{p}\Big)-7-a_p(f_{12}). \]
+\end{theorem}
+
+\begin{theorem}[Conjecture E; verified for $5\le p\le 1000$]\label{thm:E}
+For every prime $p\ge5$,
+\[ \sum_{k=0}^{p-1}\frac{\binom{2k}{k}D_k}{16^{k}}\equiv a_p(f_{12})\pmod{p^3}. \]
+In the tested range the congruence fails modulo $p^4$ for every prime except $p=809$.
+\end{theorem}
+
+The point $\lambda^{-2}=1/16$ lies outside the disc of convergence of $\varpi$, but the truncated sum still recovers the Hecke eigenvalue of the fibre to third order, exactly as at the conifold. In Theorem~\ref{thm:B} the weight-$2$ term $3p\,a_p(g_{24})$ comes from the boundary of the compactification. At $\lambda=\pm4$ it is replaced by the Artin term $4p\big(1-\leg{-1}p\big)$, which suggests boundary or singular-locus components defined only over $\Q(i)$. We have not yet determined them. We found Theorems~\ref{thm:D} and \ref{thm:E} with a blind scan. For $Y\in\{2,\dots,7\}$ and integers $0<|m|\le128$ we tested whether $\sum_{k<p}W^{(Y)}_{2k}m^{-k}$ is anomalously small modulo $p^2$ or $p^3$. In dimension $Y=4$ the only mod-$p^3$ signals were $m=16$ and $m=64$.
+
 \begin{table}[h]
 \centering
 \begin{tabular}{rrrrrrr}
@@ -187,6 +220,9 @@ By Lemma~\ref{lem:kl} this is the twisted fourth Kloosterman moment. We expect t
 \subsection*{Theorem B}
 Standard route \cite{Meyer,HSGS}. (i) Compactify $V_8$ in $(\PP^1)^4$ and compute the boundary strata. They are lower-dimensional Pauli varieties. We expect them, together with the Sym$^2$-part of Lemma~\ref{lem:kl}, to produce the terms polynomial in $p$ and the term $3p\,a_p(g_{24})$; the factor $3$ plausibly matches the three splittings $\{1,2\}\sqcup\{3,4\}$ of the qubits. (ii) Resolve the node(s) to get a smooth model $\widetilde V_8$ over $\Z[1/6]$, and show that the $(\Z/2)^4\rtimes S_4$-invariant part of $H^3$ is two-dimensional and of Hodge type $(3,0)+(0,3)$. (iii) Apply the Faltings--Serre--Livn\'e method \cite{Livne}: two $2$-adic Galois representations unramified outside $\{2,3\}$ with even traces agree if their traces agree on an explicit finite set of primes. That set is covered by our range.
 
+\subsection*{Theorems D and E}
+The same strategy as for Theorems B and C applies. For Faltings--Serre--Livn\'e the relevant set of bad primes is again $\{2,3\}$. The conductor of $f_{12}$ is consistent with this.
+
 \subsection*{Theorem C}
 Two routes. Use the Chan--Chan--Liu parametrisation of $\sum D_n z^n$ by modular functions on $\Gamma_0(6)$ \cite{CCL}, which makes $\sum\binom{2n}{n}D_nz^n$ a weight-$2$ modular form in a Hauptmodul, and then apply Beukers-type or Dwork-crystal arguments \cite{BV}. Or use the method of Mao--Schlosser \cite{MS}: hypergeometric transformations together with harmonic-number congruences.
 
@@ -197,7 +233,7 @@ Special fibres of Calabi--Yau operators and their modular forms have been tabula
 \section{Open problems}
 
 \begin{problem}
-The fibres $\lambda=\pm4$ are also singular fibres of the Picard--Fuchs operator. A search over eta-quotients with at most four factors and level in $\{12,16,18,24,32,36,48,64\}$ (allowing quadratic twists of the $p$-term) found no match. Determine the Galois representation at $\lambda=\pm4$. Is it attached to a Hilbert modular form, or does the motive fail to split?
+Prove Theorems~\ref{thm:C} and \ref{thm:E} uniformly. For instance, show that for every finite singular fibre $\lambda_0$ of the $\Z^4$ lattice Green operator the truncated period at $\lambda_0^{-2}$ is congruent modulo $p^3$ to the Hecke eigenvalue of the rank-$2$ piece of $H^3(V_{\lambda_0})$.
 \end{problem}
 
 \begin{problem}
@@ -213,7 +249,7 @@ Replace $\sigma_x$ by $\sigma_y$ or $\sigma_z$, or by a mixed Pauli string, and 
 \end{problem}
 
 \section*{Reproducibility}
-All statements were checked in exact integer arithmetic with the Python scripts in \texttt{computations/}. The main script is \texttt{verify.py}, which runs in under a minute.
+All statements were checked in exact integer arithmetic with the Python scripts in \texttt{computations/}. The main script is \texttt{verify.py}, which runs in under a minute. Theorems~\ref{thm:D}, \ref{thm:E} and Lemma~\ref{lem:modp} are checked by \texttt{verify\_lambda4.py}, which uses PARI/GP through \texttt{cypari2} for the coefficients of $f_{12}$.
 
 \section*{Acknowledgements}
 % Edit as appropriate. arXiv requires authors to take full responsibility for content; disclose AI assistance per arXiv policy.

@@ -23,14 +23,19 @@ has point counts given by twisted Kloosterman moments and periods given by close
 | A′ | `Σ_a (a/p) K(a)⁴ = −3p² − p·a_p(f_8)` (twisted 4th Kloosterman moment) | verified for p ≤ 400, conjectural |
 | B | `#V_{±8}°(F_p) = p³ − 4p² + 3p − 7 − 3p·a_p(24a) − a_p((η₁η₂η₃η₆)²)` | verified, conjectural |
 | C | `Σ_{k<p} C(2k,k) D_k / 64^k ≡ a_p((η₁η₂η₃η₆)²) (mod p³)`, fails mod p⁴ | verified, conjectural |
+| Lemma 3.3 | `#V_λ°(F_p) ≡ −7 − Σ_{k<p} C(2k,k) D_k λ^{−2k} (mod p)` for all λ ≠ 0 | proved (also checked) |
+| D | `#V_{±4}°(F_p) = p³ − 4p² + 4p(1 − (−1/p)) − 7 − a_p(f₁₂)`, f₁₂ = LMFDB 12.4.a.a | verified, conjectural |
+| E | `Σ_{k<p} C(2k,k) D_k / 16^k ≡ a_p(f₁₂) (mod p³)`, fails mod p⁴ except at p = 809 | verified, conjectural |
 
 ## Layout
 
 - `paper/main.tex`: the arXiv draft (amsart). Not compiled in this environment, so compile locally.
 - `computations/verify.py`: checks A, A′, B, C in exact arithmetic (`python3 verify.py 1000 400`, ~30 s).
+- `computations/verify_lambda4.py`: checks D, E and Lemma 3.3 (`python3 verify_lambda4.py 1000 200`, ~25 s; needs `cypari2`).
+- `computations/supercong_scan.py`: blind scan for mod p²/p³ supercongruences of Σ W⁽ʸ⁾₂ₖ m⁻ᵏ, Y = 2..7, |m| ≤ 128.
 - `computations/pauli_cy3_counts.py`: fast point counts via convolution of `x + 1/x` value distributions.
 - `computations/eta.py`: q-expansions of eta quotients.
 - `computations/supercong.py`: truncated-period congruence search.
 - `computations/sym4.py`, `scan.py`, `etasearch.py`, `motive.py`: exploratory scripts (Sym⁴ Kloosterman splitting, λ-scans).
 
-Requires `numpy`.
+Requires `numpy` (and `cypari2` for `verify_lambda4.py`).
