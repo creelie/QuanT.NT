@@ -1,0 +1,261 @@
+\documentclass[11pt]{amsart}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theoremA}{Theorem A}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{problem}[theorem]{Problem}
+
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\Kl}{\mathrm{K}}
+\newcommand{\leg}[2]{\left(\frac{#1}{#2}\right)}
+
+\title[Arithmetic of Calabi--Yau sections of the four-qubit QISM]{Kloosterman moments, Domb numbers and modular Calabi--Yau sections\\ of the four-qubit quantum inner state manifold}
+
+% TODO(authors): fill in author names and affiliations.
+\author{[Author names]}
+
+\date{\today}
+\subjclass[2020]{11F11, 11F80, 11L05, 11A07, 14J32, 14G10, 81P45}
+\keywords{Calabi--Yau threefolds, modularity, Kloosterman sums, supercongruences, Domb numbers, quantum inner state manifolds, qubits}
+
+\begin{document}
+
+\begin{abstract}
+Quantum Inner State Manifolds (QISMs) model the state space of a $Y$-qubit register as the symplectic manifold $M_Y=(\mathbb{CP}^1)^Y$ with its product Fubini--Study form. We treat $M_Y$ as an algebraic variety over $\Z$ and study its anticanonical Calabi--Yau sections. First we note that no projective-bundle QISM is itself Calabi--Yau: $c_1$ never vanishes on a $\mathbb{CP}^{N-1}$ fibre. Calabi--Yau geometry therefore has to come from sections. For $Y=4$ these sections are exactly the quadric sections of the Segre variety of separable four-qubit states. Inside this class we single out a one-parameter family $V_\lambda$ built from the (bilinearly complexified) transverse Pauli expectation $\langle\sigma_x\rangle$. On the torus it is $\sum_{i=1}^4(x_i+x_i^{-1})=\lambda$. We show that its point counts over $\F_p$ are twisted fourth moments of Kloosterman sums, and that its periods are generating functions of closed walks on $\Z^4$, namely $\binom{2n}{n}D_n$ with $D_n$ the Domb numbers. We then give three exact arithmetic statements, verified for every prime $5\le p\le 1000$:
+(A) $\#V_0^{\circ}(\F_p)=p^3-2p^2-7-a_p(f_8)$, equivalently $\sum_{a}\leg{a}{p}\Kl(a)^4=-3p^2-p\,a_p(f_8)$;
+(B) $\#V_{\pm 8}^{\circ}(\F_p)=p^3-4p^2+3p-7-3p\,a_p(g_{24})-a_p(f_6)$;
+(C) the non-CM supercongruence $\sum_{k=0}^{p-1}\binom{2k}{k}D_k\,64^{-k}\equiv a_p(f_6)\pmod{p^3}$.
+Here $f_8=\eta(2\tau)^4\eta(4\tau)^4$, $f_6=(\eta(\tau)\eta(2\tau)\eta(3\tau)\eta(6\tau))^2$ and $g_{24}=\eta(2\tau)\eta(4\tau)\eta(6\tau)\eta(12\tau)$. Statement (C) is sharp: it fails modulo $p^4$ for every prime tested. We outline proof strategies and list open problems. All computations are reproducible with the accompanying code.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+Recent work of Bhattacharjee and collaborators \cite{BN25,B26HQC,QuanTY1,QuanTY4} proposes \emph{Quantum Inner State Manifolds} (QISMs) as a geometric model for quantum computation. A QISM is a fibration of projective Hilbert spaces $\mathbb{CP}^{N-1}$ with the Fubini--Study form over a control manifold. For a $Y$-qubit register the QISM is $M_Y=(S^2)^Y=(\mathbb{CP}^1)^Y$, the manifold of product states with the product area form \cite[\S3]{QuanTY1}. The paper \cite{BN25} uses QISMs together with Luttinger surgery, fibre sums and Lefschetz pencils to build (typically non-K\"ahler) symplectic Calabi--Yau $6$-manifolds.
+
+This paper asks a narrower, arithmetic question:
+
+\begin{quote}
+\emph{Which Calabi--Yau varieties defined over $\Q$ live naturally inside a QISM, and what are their zeta functions?}
+\end{quote}
+
+Symplectic surgery generally produces manifolds with no algebraic, let alone arithmetic, structure, so we cannot use it. Instead we use the fact that $M_Y$ is a smooth projective variety over $\Z$. Its anticanonical divisors are Calabi--Yau varieties of dimension $Y-1$, and for $Y=4$ they are Calabi--Yau threefolds. Our results:
+
+\begin{enumerate}
+\item \emph{No projective-bundle QISM is Calabi--Yau} (Proposition~\ref{prop:noCY}). Calabi--Yau geometry in the QISM setting must therefore come from submanifolds, which is the route we take. This sharpens a construction in \cite[\S4]{BN25}, where the total space of a $\PP^1$-bundle over a K3 surface is treated as a candidate.
+\item For $Y=4$ the Calabi--Yau sections of $M_4$ are \emph{exactly} the quadric sections of the Segre variety of separable four-qubit states (Proposition~\ref{prop:segre}).
+\item A distinguished \emph{Pauli family} $V_\lambda$ has point counts given by twisted fourth moments of Kloosterman sums (Lemma~\ref{lem:kl}) and periods given by closed walks on $\Z^4$ (Lemma~\ref{lem:period}).
+\item At the special fibres $\lambda=0$ and $\lambda=\pm8$ the Galois representations become modular. They are attached to the weight-$4$ newforms of levels $8$ and $6$ (Theorems~\ref{thm:A} and \ref{thm:B}). The truncated period at $\lambda=8$ gives a sharp mod-$p^3$ supercongruence for a non-CM form (Theorem~\ref{thm:C}).
+\end{enumerate}
+
+\subsection*{Status of the results}
+Theorems~\ref{thm:A}--\ref{thm:C} are stated as \emph{conjectural identities with complete numerical verification in the stated range}: every prime $5\le p\le 1000$ (Theorem~\ref{thm:A}$'$ up to $p\le400$), in exact integer arithmetic. Proposition~\ref{prop:noCY}, Proposition~\ref{prop:segre} and Lemmas~\ref{lem:kl}--\ref{lem:period} are proved. For each conjectural statement we give a concrete proof strategy (\S\ref{sec:proofs}). We have searched the literature on Kloosterman moments \cite{Livne,PTV,HSGS,Yun,FSY}, Gaussian hypergeometric series \cite{AO,Kilbourn} and Domb-number supercongruences \cite{MS,CCL}. We have not found (B) or (C) stated there. Given how active these areas are, the reader should treat priority claims with caution; see Remark~\ref{rem:priority}.
+
+\section{Quantum inner state manifolds as algebraic varieties}
+
+\begin{definition}
+Let $B$ be a smooth projective variety and $E\to B$ a vector bundle of rank $N\ge2$. The \emph{algebraic QISM} attached to $(B,E)$ is $\pi:\PP(E)\to B$, the bundle of lines in $E$ (``pure states''). Each fibre $\PP(E_b)\cong\PP^{N-1}$ carries the Fubini--Study form. The \emph{$Y$-qubit QISM} is $M_Y=(\PP^1)^Y$, a product of Bloch spheres.
+\end{definition}
+
+\begin{proposition}\label{prop:noCY}
+For every QISM $\PP(E)\to B$ with $N=\operatorname{rk}E\ge2$, and more generally for every symplectic fibre bundle with fibre $(\mathbb{CP}^{N-1},\omega_{FS})$ and structure group $PU(N)$, the first Chern class of the total space is non-zero. In particular no QISM total space is Calabi--Yau.
+\end{proposition}
+
+\begin{proof}
+Let $F\cong\PP^{N-1}$ be a fibre. The normal bundle of $F$ is trivial, so $c_1(T\PP(E))|_F=c_1(T\PP^{N-1})=N\,h$, where $h$ is the hyperplane class. Since $N\ge 2$ this is non-zero in $H^2(F;\Z)$, so $c_1(T\PP(E))\ne0$. The same argument works for a symplectic fibre bundle, using the vertical tangent bundle. Algebraically, $K_{\PP(E)}=-N\xi+\pi^*(K_B+\det E^\vee)$ with $\xi=c_1(\mathcal O_{\PP(E)}(1))$, and this restricts to $\mathcal O(-N)$ on $F$.
+\end{proof}
+
+\begin{remark}
+Proposition~\ref{prop:noCY} applies to the $\PP^1$-bundle over a K3 surface considered in \cite[\S4]{BN25}: there $c_1$ restricts to $2h\ne0$ on every fibre. Surgery can in principle change $c_1$, so the symplectic Calabi--Yau manifolds of \cite{BN25} have to be understood as outputs of surgery, not as QISM total spaces. Proposition~\ref{prop:noCY} explains why an \emph{algebraic} Calabi--Yau inside the QISM framework must be a proper subvariety.
+\end{remark}
+
+\begin{proposition}\label{prop:segre}
+Let $Y\ge2$. Then $-K_{M_Y}=\mathcal{O}(2,\dots,2)$, and a smooth member of $|-K_{M_Y}|$ is a Calabi--Yau $(Y-1)$-fold. Let $\sigma:M_Y\hookrightarrow\PP(\mathbb{C}^{2^Y})$ be the Segre embedding, whose image is the set of separable $Y$-qubit pure states. Then restriction $H^0(\PP^{2^Y-1},\mathcal O(2))\to H^0(M_Y,\mathcal O(2,\dots,2))$ is surjective. Hence the anticanonical Calabi--Yau sections of $M_Y$ are exactly the quadric sections of the separable-state variety. For $Y=4$ a general member is a Calabi--Yau threefold with $h^{1,1}=4$, $h^{2,1}=68$, $\chi=-128$.
+\end{proposition}
+
+\begin{proof}
+The first two claims follow from adjunction, since $K_{\PP^1}=\mathcal O(-2)$. Every monomial of multidegree $(2,\dots,2)$ in the coordinates $(a^{(i)}_0:a^{(i)}_1)$ factors as a product of two monomials of multidegree $(1,\dots,1)$. Those are Segre coordinates $\psi_I=\prod_i a^{(i)}_{I_i}$, so the map is surjective. The Hodge numbers are standard for the $(2,2,2,2)$ hypersurface.
+\end{proof}
+
+\section{The Pauli family}
+
+For a single qubit $\psi=(a_0,a_1)$ we use the \emph{bilinear} (holomorphic) forms
+\[ q(\psi)=\psi^{\mathsf T}\psi=a_0^2+a_1^2,\qquad m(\psi)=\tfrac12\psi^{\mathsf T}\sigma_x\psi=a_0a_1. \]
+On real states these agree with $\langle\psi|\psi\rangle$ and $\tfrac12\langle\psi|\sigma_x|\psi\rangle$. We use bilinear rather than sesquilinear forms because we want algebraic subvarieties defined over $\Z$.
+
+\begin{definition}[Pauli family]
+For $\lambda\in\Q$ let $V_\lambda\subset M_4=(\PP^1)^4$ be the $(2,2,2,2)$-hypersurface
+\[ F_\lambda(\psi_1,\dots,\psi_4)=\sum_{i=1}^4 q(\psi_i)\prod_{j\ne i}m(\psi_j)\;-\;\lambda\prod_{j=1}^4 m(\psi_j)=0. \]
+In the torus coordinates $x_i=a^{(i)}_0/a^{(i)}_1$ this is $V_\lambda^\circ:\ \sum_{i=1}^4(x_i+x_i^{-1})=\lambda$. On real product states, $V_\lambda$ is the level set $\sum_i\langle\sigma_x\rangle_i^{-1}=\lambda/2$ of the \emph{inverse transverse magnetisation}.
+\end{definition}
+
+The family has the symmetry group $(\Z/2)^4\rtimes S_4$ generated by $x_i\mapsto x_i^{-1}$ and permutations. The involution $x\mapsto-x$ identifies $V_\lambda$ with $V_{-\lambda}$. Its Newton polytope is the $4$-dimensional cross-polytope, which is reflexive, so $V_\lambda$ is the symmetric one-parameter subfamily of the Batyrev mirror of the general $(2,2,2,2)$ hypersurface.
+
+Let $N_p(\lambda)=\#V_\lambda^\circ(\F_p)$ and let $\Kl(a)=\sum_{x\in\F_p^\times}e\big((x+a/x)/p\big)$ be the Kloosterman sum.
+
+\begin{lemma}\label{lem:kl}
+For $p$ odd and $\lambda\in\F_p$,
+\[ N_p(\lambda)=\frac1p\Big[(p-1)^4+\sum_{t\in\F_p^\times}\Kl(t^2)^4\,e(-\lambda t/p)\Big]. \]
+In particular $pN_p(0)=(p-1)^4+\sum_{a\in\F_p^\times}\big(1+\leg ap\big)\Kl(a)^4$.
+\end{lemma}
+
+\begin{proof}
+By orthogonality $pN_p(\lambda)=\sum_{t}e(-\lambda t/p)\big(\sum_{x\ne0}e(t(x+x^{-1})/p)\big)^4$. For $t\neq0$, the substitution $x\mapsto t^{-1}y$ turns the inner sum into $\Kl(t^2)$. The term $t=0$ contributes $(p-1)^4$. The map $t\mapsto t^2$ is $2:1$ onto the squares, which gives the second formula.
+\end{proof}
+
+\begin{lemma}\label{lem:period}
+The period of the holomorphic $3$-form of $V_\lambda$ over the real torus $|x_i|=1$ is, for $|\lambda|>8$,
+\[ \varpi(\lambda)=\frac{1}{(2\pi i)^4}\oint\frac{\lambda}{\lambda-\sum_i(x_i+x_i^{-1})}\prod_i\frac{dx_i}{x_i}=\sum_{n\ge0}\frac{W_{2n}}{\lambda^{2n}},\qquad W_{2n}=\binom{2n}{n}D_n, \]
+where $W_{2n}$ counts closed walks of length $2n$ on $\Z^4$ and $D_n=\sum_k\binom nk^2\binom{2k}k\binom{2n-2k}{n-k}$ are the Domb numbers.
+\end{lemma}
+
+\begin{proof}
+Expand geometrically and take constant terms: $W_{2n}=\mathrm{CT}\big[(\sum_i x_i+x_i^{-1})^{2n}\big]$ is the number of closed walks. Splitting the walk into its two $\Z^2$ components gives $W_{2n}=\sum_k\binom{2n}{2k}\binom{2k}{k}^2\binom{2n-2k}{n-k}^2$. The identity with $\binom{2n}{n}D_n$ is classical \cite{Guttmann}; we also checked it for $n\le 300$.
+\end{proof}
+
+So $\varpi$ is the lattice Green function of $\Z^4$. It satisfies a fourth-order differential equation of Calabi--Yau type \cite{Guttmann,AESZ}, with singular points at $\lambda^2\in\{0,16,64,\infty\}$. The fibres $\lambda=\pm8$ are conifold fibres: $V^\circ_{8}$ has a single node at $x=(1,1,1,1)$.
+
+\section{Modularity at the special fibres}
+
+Throughout, $a_p(f)$ denotes the $p$-th Fourier coefficient and
+\[ f_8=\eta(2\tau)^4\eta(4\tau)^4\in S_4(\Gamma_0(8)),\quad f_6=\big(\eta(\tau)\eta(2\tau)\eta(3\tau)\eta(6\tau)\big)^2\in S_4(\Gamma_0(6)),\quad g_{24}=\eta(2\tau)\eta(4\tau)\eta(6\tau)\eta(12\tau)\in S_2(\Gamma_0(24)). \]
+Here $g_{24}$ is the newform of the elliptic curve $24a$. On the Pauli family, $g_{24}$ arises as the curve $y^2=(v^2-4)((8-v)^2-4)$, the intersection of two ``single-qubit'' quadrics.
+
+\begin{theorem}[Conjecture A; verified for $5\le p\le 1000$]\label{thm:A}
+For every prime $p\ge5$,
+\[ N_p(0)=p^3-2p^2-7-a_p(f_8). \]
+\end{theorem}
+
+\noindent Combining this with Lemma~\ref{lem:kl} and the classical untwisted moment $\sum_{a\ne0}\Kl(a)^4=2p^3-3p^2-3p-1$ gives an equivalent form:
+
+\begin{theorem}[Conjecture A$'$; verified for $5\le p\le 400$]
+$\displaystyle \sum_{a\in\F_p^\times}\leg ap\Kl(a)^4=-3p^2-p\,a_p(f_8).$
+\end{theorem}
+
+\begin{theorem}[Conjecture B; verified for $5\le p\le 1000$]\label{thm:B}
+For every prime $p\ge5$,
+\[ N_p(8)=N_p(-8)=p^3-4p^2+3p-7-3p\,a_p(g_{24})-a_p(f_6). \]
+\end{theorem}
+
+\begin{theorem}[Conjecture C; verified for $5\le p\le 1000$]\label{thm:C}
+For every prime $p\ge5$,
+\[ \sum_{k=0}^{p-1}\frac{\binom{2k}{k}D_k}{64^{k}}\equiv a_p(f_6)\pmod{p^3}, \]
+and the congruence fails modulo $p^4$ for every prime in the range.
+\end{theorem}
+
+Theorem~\ref{thm:C} says that the period of the Pauli family, truncated at $p$ and evaluated at the conifold $\lambda=8$ (that is, $\lambda^{-2}=1/64$), recovers the Hecke eigenvalue of the modular motive found in Theorem~\ref{thm:B} to third order. The form $f_6$ has no complex multiplication. So this is a non-CM supercongruence, of the same kind as the Kilbourn--Van Hamme congruence for Ap\'ery numbers and $f_8$ \cite{Kilbourn}, and unlike the CM congruences ($p=x^2+3y^2$) for $\sum D_k/4^k$ conjectured by Z.-H.~Sun and proved by Mao--Schlosser \cite{MS}. It also fits the level-$6$ modular parametrisation of the Domb numbers by Chan--Chan--Liu \cite{CCL}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{rrrrrrr}
+\toprule
+$p$ & $N_p(0)$ & $a_p(f_8)$ & $N_p(8)$ & $a_p(f_6)$ & $a_p(g_{24})$ & $\sum_{k<p}\binom{2k}kD_k64^{-k}\bmod p^3$\\
+\midrule
+5 & 70 & $-2$ & 57 & 6 & $-2$ & 6\\
+7 & 214 & 24 & 177 & $-16$ & 0 & $327\equiv-16$\\
+11 & 1126 & $-44$ & 729 & 12 & 4 & 12\\
+13 & 1830 & 22 & 1593 & 38 & $-2$ & 38\\
+17 & 4278 & 50 & 3825 & $-126$ & 2 & $4787\equiv-126$\\
+19 & 6086 & 44 & 5673 & 20 & $-4$ & 20\\
+23 & 11158 & $-56$ & 10497 & 168 & $-8$ & 168\\
+29 & 22502 & 198 & 20553 & 30 & 6 & 30\\
+31 & 28022 & $-160$ & 25377 & $-88$ & 8 & $29703\equiv-88$\\
+\bottomrule
+\end{tabular}
+\caption{First values. The full verification is \texttt{computations/verify.py}.}
+\end{table}
+
+\section{Towards proofs}\label{sec:proofs}
+
+\subsection*{Theorem A}
+By Lemma~\ref{lem:kl} this is the twisted fourth Kloosterman moment. We expect to prove it by writing $\sum_a\leg ap\Kl(a)^4$ as a finite-field ${}_4F_3(1)$ Gaussian hypergeometric sum and applying Ahlgren--Ono \cite{AO}, who relate ${}_4F_3(1)_p$ to $a_p(f_8)$. An alternative is to realise $\leg{\cdot}{p}\otimes\mathrm{Sym}^4\mathrm{Kl}_2$ geometrically and apply the Fresán--Sabbah--Yu / Yun framework \cite{FSY,Yun}.
+
+\subsection*{Theorem B}
+Standard route \cite{Meyer,HSGS}. (i) Compactify $V_8$ in $(\PP^1)^4$ and compute the boundary strata. They are lower-dimensional Pauli varieties. We expect them, together with the Sym$^2$-part of Lemma~\ref{lem:kl}, to produce the terms polynomial in $p$ and the term $3p\,a_p(g_{24})$; the factor $3$ plausibly matches the three splittings $\{1,2\}\sqcup\{3,4\}$ of the qubits. (ii) Resolve the node(s) to get a smooth model $\widetilde V_8$ over $\Z[1/6]$, and show that the $(\Z/2)^4\rtimes S_4$-invariant part of $H^3$ is two-dimensional and of Hodge type $(3,0)+(0,3)$. (iii) Apply the Faltings--Serre--Livn\'e method \cite{Livne}: two $2$-adic Galois representations unramified outside $\{2,3\}$ with even traces agree if their traces agree on an explicit finite set of primes. That set is covered by our range.
+
+\subsection*{Theorem C}
+Two routes. Use the Chan--Chan--Liu parametrisation of $\sum D_n z^n$ by modular functions on $\Gamma_0(6)$ \cite{CCL}, which makes $\sum\binom{2n}{n}D_nz^n$ a weight-$2$ modular form in a Hauptmodul, and then apply Beukers-type or Dwork-crystal arguments \cite{BV}. Or use the method of Mao--Schlosser \cite{MS}: hypergeometric transformations together with harmonic-number congruences.
+
+\begin{remark}\label{rem:priority}
+Special fibres of Calabi--Yau operators and their modular forms have been tabulated extensively \cite{AESZ,Meyer}. Moments of Kloosterman sums have been studied systematically \cite{Livne,PTV,HSGS,Yun,FSY}. Before submission the authors must check (B) and (C) against these sources and the AESZ database, and against Z.-W.~Sun's and Z.-H.~Sun's conjecture lists. If (C) is already stated there, this paper still contributes the geometric explanation: it identifies the truncated sum as a truncated period of the four-qubit Pauli family at its conifold fibre, together with Theorem~\ref{thm:B}.
+\end{remark}
+
+\section{Open problems}
+
+\begin{problem}
+The fibres $\lambda=\pm4$ are also singular fibres of the Picard--Fuchs operator. A search over eta-quotients with at most four factors and level in $\{12,16,18,24,32,36,48,64\}$ (allowing quadratic twists of the $p$-term) found no match. Determine the Galois representation at $\lambda=\pm4$. Is it attached to a Hilbert modular form, or does the motive fail to split?
+\end{problem}
+
+\begin{problem}
+For generic $\lambda\in\Q$ the invariant part of $H^3(V_\lambda)$ has rank $4$. Find all rational $\lambda$ at which it splits as $2+2$ (``rank-two attractor points'' in the sense of Candelas--de la Ossa--Elmi--van Straten \cite{CdOEvS}).
+\end{problem}
+
+\begin{problem}[Qubit number]
+Repeat the analysis for $Y$ qubits. The torus count is a twisted $Y$-th Kloosterman moment, and the period is the $\Z^Y$ lattice Green function. For $Y=5,6,7$ one expects contact with the known modularity of the $5$th, $6$th and $7$th Kloosterman moments \cite{PTV,HSGS,Yun}.
+\end{problem}
+
+\begin{problem}[Other Pauli operators]
+Replace $\sigma_x$ by $\sigma_y$ or $\sigma_z$, or by a mixed Pauli string, and compute the corresponding families. The Clifford group acts on these choices. Is the arithmetic (levels, supercongruences) Clifford-invariant?
+\end{problem}
+
+\section*{Reproducibility}
+All statements were checked in exact integer arithmetic with the Python scripts in \texttt{computations/}. The main script is \texttt{verify.py}, which runs in under a minute.
+
+\section*{Acknowledgements}
+% Edit as appropriate. arXiv requires authors to take full responsibility for content; disclose AI assistance per arXiv policy.
+Parts of the exploratory computation and drafting were assisted by an AI system; the authors take full responsibility for all content.
+
+\begin{thebibliography}{99}
+
+\bibitem{AO} S.~Ahlgren and K.~Ono, \emph{A Gaussian hypergeometric series evaluation and Ap\'ery number congruences}, J. Reine Angew. Math. \textbf{518} (2000), 187--212.
+
+\bibitem{AESZ} G.~Almkvist, C.~van Enckevort, D.~van Straten and W.~Zudilin, \emph{Tables of Calabi--Yau equations}, arXiv:math/0507430.
+
+\bibitem{BV} F.~Beukers and M.~Vlasenko, \emph{Dwork crystals I--III}, Int. Math. Res. Not. and arXiv:1903.11155 ff.
+
+\bibitem{BN25} D.~Bhattacharjee and P.~Nandi, \emph{Constructing exotic Calabi--Yau 3-folds via quantum inner state manifolds}, Preprints 2025, 2025050700, doi:10.20944/preprints202505.0700.v1.
+
+\bibitem{B26HQC} D.~Bhattacharjee, \emph{Holonomic quantum computing}, Qeios (2026), doi:10.32388/GSWD6Q.
+
+\bibitem{QuanTY1} S.~Singha Roy, D.~Bhattacharjee, P.~Samal, P.~Nandi et al., \emph{Quantum algorithms on symplectic state manifolds}, SSRN (2026), doi:10.2139/ssrn.6114107.
+
+\bibitem{QuanTY4} D.~Bhattacharjee, P.~Samal and P.~Nandi, \emph{Framework for symplectic holonomic quantum architecture (QuanTY IV)}, SSRN (2026), doi:10.2139/ssrn.6326638.
+
+\bibitem{CdOEvS} P.~Candelas, X.~de la Ossa, M.~Elmi and D.~van Straten, \emph{A one parameter family of Calabi--Yau manifolds with attractor points of rank two}, J. High Energy Phys. (2020).
+
+\bibitem{CCL} H.~H.~Chan, S.~H.~Chan and Z.-G.~Liu, \emph{Domb's numbers and Ramanujan--Sato type series for $1/\pi$}, Adv. Math. \textbf{186} (2004), 396--410.
+
+\bibitem{FSY} J.~Fres\'an, C.~Sabbah and J.-D.~Yu, \emph{Hodge theory of Kloosterman connections}, Duke Math. J. \textbf{171} (2022).
+
+\bibitem{Guttmann} A.~J.~Guttmann, \emph{Lattice Green functions in all dimensions}, J. Phys. A \textbf{43} (2010), 305205.
+
+\bibitem{HSGS} K.~Hulek, J.~Spandaw, B.~van Geemen and D.~van Straten, \emph{The modularity of the Barth--Nieto quintic and its relatives}, Adv. Geom. \textbf{1} (2001), 263--289.
+
+\bibitem{Kilbourn} T.~Kilbourn, \emph{An extension of the Ap\'ery number supercongruence}, Acta Arith. \textbf{123} (2006), 335--348.
+
+\bibitem{Livne} R.~Livn\'e, \emph{Cubic exponential sums and Galois representations}, in: Current Trends in Arithmetical Algebraic Geometry, Contemp. Math. \textbf{67} (1987), 247--261.
+
+\bibitem{MS} G.-S.~Mao and M.~J.~Schlosser, \emph{Supercongruences involving Domb numbers and binary quadratic forms}, arXiv:2112.12732.
+
+\bibitem{Meyer} C.~Meyer, \emph{Modular Calabi--Yau Threefolds}, Fields Inst. Monogr. \textbf{22}, AMS, 2005.
+
+\bibitem{PTV} C.~Peters, J.~Top and M.~van der Vlugt, \emph{The Hasse zeta function of a K3 surface related to the number of words of weight 5 in the Melas codes}, J. Reine Angew. Math. \textbf{432} (1992), 151--176.
+
+\bibitem{Yun} Z.~Yun, \emph{Galois representations attached to moments of Kloosterman sums and conjectures of Evans}, Compos. Math. \textbf{151} (2015), 68--120.
+
+\end{thebibliography}
+\end{document}
